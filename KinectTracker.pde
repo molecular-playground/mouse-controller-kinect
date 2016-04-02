@@ -5,6 +5,9 @@
 // https://github.com/shiffman/OpenKinect-for-Processing
 // http://shiffman.net/p5/kinect/
 
+import java.awt.Robot;
+import java.awt.AWTException;
+
 class KinectTracker {
 
   // Depth threshold
@@ -21,6 +24,9 @@ class KinectTracker {
   
   // What we'll show the user
   PImage display;
+  
+  // Robot for controlling mouse functions
+  Robot robot;
    
   KinectTracker() {
     // This is an awkard use of a global variable here
@@ -32,6 +38,13 @@ class KinectTracker {
     // Set up the vectors
     loc = new PVector(0, 0);
     lerpedLoc = new PVector(0, 0);
+    
+    try {
+      robot = new Robot();
+    } catch (AWTException e) {
+      println("Robot class not supported by your system!");
+      exit();
+    }
   }
 
   void track() {
@@ -114,5 +127,15 @@ class KinectTracker {
 
   void setThreshold(int t) {
     threshold =  t;
-  }  }
+  }
+  
+
+  void controlMouse() {
+    try {
+      robot.mouseMove(1,2);
+    } catch (Exception e) {
+      println("Robot class not supported by your system!");
+      exit();
+    }
+  }
 }

@@ -56,6 +56,8 @@ void keyPressed() {
     } else if (keyCode == DOWN) {
       t-=5;
       tracker.setThreshold(t);
+    } else if (keyCode == RIGHT) {
+      tracker.controlMouse();
     }
   }
 }
