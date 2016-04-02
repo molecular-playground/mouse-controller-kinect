@@ -6,7 +6,7 @@ class KinectTracker {
   // Raw location
   PVector loc;
 
-  // Intelocation
+  // Interpolated location
   PVector lerpedLoc;
   
   // Old Interpolated location
