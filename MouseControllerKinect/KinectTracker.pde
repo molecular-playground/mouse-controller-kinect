@@ -6,8 +6,11 @@ class KinectTracker {
   // Raw location
   PVector loc;
 
-  // Interpolated location
+  // Intelocation
   PVector lerpedLoc;
+  
+  // Old Interpolated location
+  PVector oldLerpedLoc;
 
   // Depth data
   int[] depth;
@@ -25,6 +28,7 @@ class KinectTracker {
     // Set up the vectors
     loc = new PVector(0, 0);
     lerpedLoc = new PVector(0, 0);
+    oldLerpedLoc = new PVector(0, 0);
   }
 
   void track() {
@@ -53,18 +57,34 @@ class KinectTracker {
         }
       }
     }
+    
+    // Update last lerped location
+    oldLerpedLoc.x = lerpedLoc.x;
+    oldLerpedLoc.y = lerpedLoc.y;
+    
     // As long as we found something
     if (count != 0) {
-      loc = new PVector(sumX/count, sumY/count);
+      loc.set(sumX/count, sumY/count);
+      
+      // Interpolating the location, doing it arbitrarily for now
+      if(oldLerpedLoc.x >= 0 && oldLerpedLoc.y >=0) {
+        lerpedLoc.x = PApplet.lerp(oldLerpedLoc.x, loc.x, 0.3f);
+        lerpedLoc.y = PApplet.lerp(oldLerpedLoc.y, loc.y, 0.3f);
+      } else {
+        lerpedLoc.set(sumX/count, sumY/count);
+      }
+    } else {
+      loc.set(-1, -1);
+      lerpedLoc.set(-1, -1);
     }
-
-    // Interpolating the location, doing it arbitrarily for now
-    lerpedLoc.x = PApplet.lerp(lerpedLoc.x, loc.x, 0.3f);
-    lerpedLoc.y = PApplet.lerp(lerpedLoc.y, loc.y, 0.3f);
   }
 
   PVector getLerpedPos() {
     return lerpedLoc;
+  }
+  
+  PVector getOldLerpedPos() {
+    return oldLerpedLoc;
   }
 
   PVector getPos() {
