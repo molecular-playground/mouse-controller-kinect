@@ -58,7 +58,7 @@ class KinectTracker {
       }
     }
     
-    // Update last lerped location
+    // Update old lerped location
     oldLerpedLoc.x = lerpedLoc.x;
     oldLerpedLoc.y = lerpedLoc.y;
     
@@ -70,9 +70,13 @@ class KinectTracker {
       if(oldLerpedLoc.x >= 0 && oldLerpedLoc.y >=0) {
         lerpedLoc.x = PApplet.lerp(oldLerpedLoc.x, loc.x, 0.3f);
         lerpedLoc.y = PApplet.lerp(oldLerpedLoc.y, loc.y, 0.3f);
+        
+      // If there is no old lerped location, just set it to the current location
       } else {
         lerpedLoc.set(sumX/count, sumY/count);
       }
+      
+    // If we haven't found anything, set everything to "null"
     } else {
       loc.set(-1, -1);
       lerpedLoc.set(-1, -1);
