@@ -1,10 +1,5 @@
-// Daniel Shiffman
-// Tracking the average location beyond a given depth threshold
-// Thanks to Dan O'Sullivan
-
-// https://github.com/shiffman/OpenKinect-for-Processing
-// http://shiffman.net/p5/kinect/
-
+import java.awt.AWTException;
+import java.awt.Robot;
 import org.openkinect.freenect.*;
 import org.openkinect.processing.*;
 
@@ -12,11 +7,20 @@ import org.openkinect.processing.*;
 KinectTracker tracker;
 Kinect kinect;
 
+// Robot for controlling mouse functions
+Robot robot;
 
 void setup() {
   size(640, 520);
   kinect = new Kinect(this);
   tracker = new KinectTracker();
+  
+  try {
+    robot = new Robot();
+  } catch (AWTException e) {
+    println("Robot class not supported by your system!");
+    exit();
+  }
 }
 
 void draw() {
@@ -57,7 +61,16 @@ void keyPressed() {
       t-=5;
       tracker.setThreshold(t);
     } else if (keyCode == RIGHT) {
-      tracker.controlMouse();
+      controlMouse();
     }
+  }
+}
+  
+void controlMouse() {
+  try {
+    robot.mouseMove(1,2);
+  } catch (Exception e) {
+    println("Robot class not supported by your system!");
+    exit();
   }
 }
