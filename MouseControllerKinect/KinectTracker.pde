@@ -1,4 +1,6 @@
 class KinectTracker {
+  
+  Kinect kinect;
 
   // Depth threshold
   int threshold = 745;
@@ -18,7 +20,9 @@ class KinectTracker {
   // What we'll show the user
   PImage display;
    
-  KinectTracker() {
+  KinectTracker(Kinect kinect) {
+    this.kinect = kinect;
+    
     // This is an awkard use of a global variable here
     // But doing it this way for simplicity
     kinect.initDepth();

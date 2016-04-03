@@ -15,7 +15,7 @@ Robot robot;
 void setup() {
   size(640, 520);
   kinect = new Kinect(this);
-  tracker = new KinectTracker();
+  tracker = new KinectTracker(kinect);
   
   try {
     robot = new Robot();
