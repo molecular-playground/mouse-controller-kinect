@@ -71,14 +71,15 @@ void draw() {
 }
 
 void drawPosition(PVector pos, int v1, int v2, int v3, int alpha) {
-  if(pos.x >= 0 && pos.y >=0) {
+  if (pos.x >= 0 && pos.y >=0) {
     fill(v1, v2, v3, alpha);
     noStroke();
     ellipse(pos.x, pos.y, 20, 20);
   }
 }
 
-// Adjust the threshold with key presses
+// Adjust the threshold, degree of tilt, mouseType,
+// and determine if the mouse should be pressed with key presses
 void keyPressed() {
   int t = tracker.getThreshold();
   if (key == CODED) {
@@ -129,29 +130,29 @@ void handleMouse() {
   
   // Only enable mouse if in range
   // ...and there is an old position for "DRAG" mouse type
-  if(newPos.x >= 0 && newPos.y >=0 && oldPos.x >= 0 && oldPos.y >=0) {
+  if (newPos.x >= 0 && newPos.y >=0 && oldPos.x >= 0 && oldPos.y >=0) {
     
     // "TOUCH" mouse type, needs to be before 
-    if(mouseType == TOUCH) {
+    if (mouseType == TOUCH) {
       moveMouse(newPos);
     }
     
     // Press/unpress the mouse if that setting is turned on/off
-    if(isMousePressEnabled && !isMousePressed) {
+    if (isMousePressEnabled && !isMousePressed) {
       robot.mousePress(InputEvent.getMaskForButton(MouseEvent.BUTTON1));
       isMousePressed = true;
-    } else if(!isMousePressEnabled && isMousePressed) {
+    } else if (!isMousePressEnabled && isMousePressed) {
       robot.mouseRelease(InputEvent.getMaskForButton(MouseEvent.BUTTON1));
       isMousePressed = false;
     }
     
     // "DRAG" move type, needs to be after press so we can click and drag
-    if(mouseType == DRAG) {
+    if (mouseType == DRAG) {
       moveMouse((int)(newPos.x-oldPos.x), (int)(newPos.y-oldPos.y));
     }
 
   // When mouse is out of range, unpress it
-  } else if(isMousePressed) {
+  } else if (isMousePressed) {
     robot.mouseRelease(InputEvent.getMaskForButton(MouseEvent.BUTTON1));
     isMousePressed = false;
   }
