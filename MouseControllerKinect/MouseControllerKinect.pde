@@ -2,28 +2,38 @@ import java.awt.AWTException;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Robot;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import org.openkinect.freenect.*;
 import org.openkinect.processing.*;
 
+// Mouse movement and press logic
+static final int DRAG = 0;
+static final int TOUCH = 1;
+int mouseType;
+boolean isMousePressEnabled;
+boolean isMousePressed;
+
 // The kinect stuff is happening in another class
 KinectTracker tracker;
 Kinect kinect;
+
+// The angle of the kinect
 float deg;
 
 // Robot for controlling mouse functions
 Robot robot;
 
-// Boolean determining if mouse will be pressed
-boolean isMousePressEnabled;
-boolean isMousePressed;
-
 void setup() {
   size(640, 520);
+  
   kinect = new Kinect(this);
   tracker = new KinectTracker(kinect);
   deg = kinect.getTilt();
+  
+  mouseType = TOUCH;
   isMousePressEnabled = false;
   isMousePressed = false;
   
@@ -89,6 +99,10 @@ void keyPressed() {
     }
   } else if (key == 'm') {
     isMousePressEnabled = !isMousePressEnabled;
+  } else if (key == '0') {
+    mouseType = DRAG;
+  } else if (key == '1') {
+    mouseType = TOUCH;
   }
 }
 
@@ -98,27 +112,44 @@ void moveMouse(int deltaX, int deltaY) {
   robot.mouseMove(p.x + deltaX, p.y + deltaY);
 }
 
+// Move the mouse to a specific point
+void moveMouse(PVector pos) {
+  GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+  int screenWidth = gd.getDisplayMode().getWidth();
+  int screenHeight = gd.getDisplayMode().getHeight();
+
+  int screenX = (int) map(pos.x, 0, width, 0, screenWidth);
+  int screenY = (int) map(pos.y, 0, height, 0, screenHeight);
+  robot.mouseMove(screenX, screenY);
+}
+
 void handleMouse() {
   PVector oldPos = tracker.getOldLerpedPos();
   PVector newPos = tracker.getLerpedPos();
   
   // Only enable mouse if in range
-  if(newPos.x >= 0 && newPos.y >=0) {
+  // ...and there is an old position for "DRAG" mouse type
+  if(newPos.x >= 0 && newPos.y >=0 && oldPos.x >= 0 && oldPos.y >=0) {
+    
+    // "TOUCH" mouse type, needs to be before 
+    if(mouseType == TOUCH) {
+      moveMouse(newPos);
+    }
     
     // Press/unpress the mouse if that setting is turned on/off
     if(isMousePressEnabled && !isMousePressed) {
-     robot.mousePress(InputEvent.getMaskForButton(MouseEvent.BUTTON1));
-     isMousePressed = true;
+      robot.mousePress(InputEvent.getMaskForButton(MouseEvent.BUTTON1));
+      isMousePressed = true;
     } else if(!isMousePressEnabled && isMousePressed) {
-     robot.mouseRelease(InputEvent.getMaskForButton(MouseEvent.BUTTON1));
-     isMousePressed = false;
+      robot.mouseRelease(InputEvent.getMaskForButton(MouseEvent.BUTTON1));
+      isMousePressed = false;
     }
     
-    // Move mouse if there was an old location
-    if(oldPos.x >= 0 && oldPos.y >=0) {
+    // "DRAG" move type, needs to be after press so we can click and drag
+    if(mouseType == DRAG) {
       moveMouse((int)(newPos.x-oldPos.x), (int)(newPos.y-oldPos.y));
     }
-    
+
   // When mouse is out of range, unpress it
   } else if(isMousePressed) {
     robot.mouseRelease(InputEvent.getMaskForButton(MouseEvent.BUTTON1));
