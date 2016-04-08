@@ -19,11 +19,13 @@ Each release of mouse-controller-kinect will have downloadable executables in th
 Nothing, just run the application and you should be all set!
 
 #### Windows
-CAUTION: Untested! Based off of [here](https://github.com/shiffman/OpenKinect-for-Processing#linux).
-
+Install:
 - Java 8
 - libusbK
   - Download [Zadig](http://zadig.akeo.ie/) to install the libusbK driver for the Kinect v1
+
+To Run:  
+```java -Djava.ext.dirs=lib -Djava.library.path=lib MouseControllerKinect```
 
 #### Linux
 CAUTION: Untested! Based off of [here](https://github.com/shiffman/OpenKinect-for-Processing#windows).
